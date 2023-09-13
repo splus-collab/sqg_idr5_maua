@@ -38,27 +38,27 @@ with tqdm(position=0, leave=True) as pbar:
 #if os.path.exists(os.path.join(save_path,filename.split('/')[-1])):         
 #    continue
 
-		else:
-			try:
-				#data = pd.read_table(filename, sep=",")
-				data = Table.read(filename, format="fits")
-				data = data.to_pandas()
-				data["ID"] = data["ID_in"].str.decode('utf-8')
-				data.rename(columns={"W1mag": "w1mpro", "W2mag":"w2mpro", "e_W1mag": "w1sigmpro", "e_W2mag":"w2sigmpro"}, inplace=True)
+#else:
+try:
+    #data = pd.read_table(filename, sep=",")
+    data = Table.read(filename, format="fits")
+    data = data.to_pandas()
+    data["ID"] = data["ID_in"].str.decode('utf-8')
+    data.rename(columns={"W1mag": "w1mpro", "W2mag":"w2mpro", "e_W1mag": "w1sigmpro", "e_W2mag":"w2sigmpro"}, inplace=True)
 
-				#col_wise = {"w1mpro":"W1mag", "w2mpro":"W2mag", "w1sigmpro": "e_W1mag", "w2sigmpro": "e_W2mag"}                    
+    #col_wise = {"w1mpro":"W1mag", "w2mpro":"W2mag", "w1sigmpro": "e_W1mag", "w2sigmpro": "e_W2mag"}                    
 
-				results = model.classify(data,  match_irsa=False)
-			except Exception as e:
-				print(e)
-				logging.error("%s : ERROR ON CLASSIFICATION" %filename)
-				print(f"ERROR ON CLASSIFICATION FOR {filename}")
+    results = model.classify(data,  match_irsa=False)
+except Exception as e:
+    print(e)
+    logging.error("%s : ERROR ON CLASSIFICATION" %filename)
+    print(f"ERROR ON CLASSIFICATION FOR {filename}")
 
-			else:
-				results.index = data.index
-				results = pd.concat([data[["ID", "RA", "DEC"]], results], axis=1)
-				#results.to_csv(os.path.join(save_path,filename.split('/')[-1]), sep =",", index=False)
-				results = Table.from_pandas(results)
-				results.write(os.path.join(save_path, filename.split(os.path.sep)[-1]), overwrite=True)
+else:
+    results.index = data.index
+    results = pd.concat([data[["ID", "RA", "DEC"]], results], axis=1)
+    #results.to_csv(os.path.join(save_path,filename.split('/')[-1]), sep =",", index=False)
+    results = Table.from_pandas(results)
+    results.write(os.path.join(save_path, filename.split(os.path.sep)[-1]), overwrite=True)
 
 
