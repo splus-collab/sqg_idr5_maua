@@ -41,17 +41,16 @@ class SQGClass:
         
         else:
             if self.release == "DR5":
-                with open("iDR5_RF_12S2W4M.sav", "rb") as f:
+                with open("iDR4_RF_12S2W4M.sav", "rb") as f:
                     self.model = pickle.load(f)
             else:
                 raise(ValueError)("Try setting up request = True. Request = False is only workable for DR4 and DR5.")
                 
         try:
-            if self.model_name == 'RF18':
-                if self.verbose:
-                    print("Loading model...")
-                self.model = self.model.content
-                self.model = pickle.loads(self.model)
+            if self.verbose:
+                print("Loading model...")
+            self.model = self.model.content
+            self.model = pickle.loads(self.model)
         except:                 
             pass
 
@@ -155,11 +154,11 @@ class SQGClass:
         data = self.crossmatch(data, df_wise)
         return data
 
-    def classify(self, df, return_prob=True, match_irsa=False, columns_wise={'w1mpro': 'w1mpro',
-                                                                             'w2mpro': 'w2mpro', 'w1snr': 'w1snr',
-                                                                             'w2snr': 'w2snr',
-                                                                             'w1sigmpro': 'w1sigmpro',
-                                                                             'w2sigmpro': 'w2sigmpro'}, verbose=False):
+    def classify(self, df, return_prob=True, columns_wise={'w1mpro': 'w1mpro',
+                                                           'w2mpro': 'w2mpro', 'w1snr': 'w1snr',
+                                                           'w2snr': 'w2snr',
+                                                           'w1sigmpro': 'w1sigmpro',
+                                                           'w2sigmpro': 'w2sigmpro'}, verbose=False):
 
         '''
         Create classifications for sources with or without counterpart
@@ -181,8 +180,8 @@ class SQGClass:
         data = df.copy(deep=True)
 
         self._feat_wise = [columns_wise["w1mpro"], columns_wise["w2mpro"]]
-        # self._error_wise = [columns_wise["w1snr"], columns_wise["w2snr"], columns_wise["w1sigmpro"], columns_wise["w2sigmpro"]]
-        self._error_wise = [columns_wise["w1mpro"], columns_wise["w2mpro"],columns_wise["w1sigmpro"], columns_wise["w2sigmpro"]] # took out w1snr and w2snr because of cdsskymatch 
+        # took out w1snr and w2snr because of cdsskymatch
+        self._error_wise = [columns_wise["w1mpro"], columns_wise["w2mpro"],columns_wise["w1sigmpro"], columns_wise["w2sigmpro"]]
 
         try:
             data.iloc[0,]
@@ -201,7 +200,7 @@ class SQGClass:
         if verbose:
             print("Note that this function assumes that the input data were previously extinction corrected. Starting classification... ")
         
-        data = self.check_match_irsa(data, match_irsa)
+        data = self.check_match_irsa(data)
         ypred = pd.DataFrame(self.model.predict(data[self._morph + self._feat + self._feat_wise]))
         ypred.index = data.index
         results = ypred
