@@ -2,17 +2,15 @@ import os
 import pandas as pd
 from utils.sfdmap import SFDMap
 import extinction
-from utils.paths import data_path
+from settings.paths import dustmap_path
 import numpy as np
-from utils.columns import feat, wise, sdss
+from settings.features import splus, wise
 
-def correction(data, aper, splus_bands = True, sdss_bands = True, wise_bands = True):
+def correction(data, splus_bands = True,  wise_bands = True):
     chunk = data.copy(deep=True)
-    splus = [item+"_"+aper for item in feat]
-    # feat = galex+splus+wise
     features = []
     all_lambdas = []
-    m = SFDMap(os.path.join(data_path, 'dustmaps'))
+    m = SFDMap(dustmap_path)
     EBV = m.ebv(chunk.RA, chunk.DEC)
 
     # Obtendo A_v nesta mesma posição
@@ -28,14 +26,10 @@ def correction(data, aper, splus_bands = True, sdss_bands = True, wise_bands = T
         Lambdas_wise = np.array([33526.00, 46028.00])
         features.append(wise)
         all_lambdas.append(Lambdas_wise)
-    if sdss_bands:
-        Lambdas_sdss = np.array([3543, 4770, 6231, 7625, 9134])
-        features.append(sdss)
-        all_lambdas.append(Lambdas_sdss)
 
     all_lambdas = np.concatenate(all_lambdas)
     features = np.concatenate(features)
-    
+
     Extinctions = []
     for i in range(len(AV)):
         Extinctions.append(extinction.ccm89(all_lambdas, AV[i], 3.1))
@@ -47,4 +41,5 @@ def correction(data, aper, splus_bands = True, sdss_bands = True, wise_bands = T
     chunk[features] = chunk[features].sub(Extinction_DF)
     chunk[features] = chunk[features].mask(mask_99, other = 99)
     return chunk
+
 
