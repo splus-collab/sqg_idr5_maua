@@ -23,10 +23,10 @@ class SQGClass:
         try:
             if self.verbose:
                 print("Loading model...")
-            with open("models/model_gaia_temp.sav", "rb") as f:
+            with open("models/rf_broad_narrow_wise_morph_gaia.sav", "rb") as f:
                 self.model_gaia = pickle.load(f)
-            with open("models/model_temp.sav", "rb") as f:
-                self.model = pickle.load(f)
+            with open("models/rf_broad_narrow_wise_morph.sav", "rb") as f:
+                self.model = pickle.load(f) 
         except:
             raise ValueError("Loading model failed.")
                 
@@ -99,5 +99,5 @@ class SQGClass:
             print("Finished process.")
 
         self.results.index = data.index
-        self.results = pd.concat([data[["ID", "RA", "DEC"]+wise+gaia], self.results], axis=1)
+        self.results = pd.concat([data[["ID", "RA", "DEC" ]+wise+gaia], self.results], axis=1)
         return self.results.sort_index(axis=0)
