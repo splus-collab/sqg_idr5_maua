@@ -7,6 +7,8 @@ from astropy.coordinates import SkyCoord
 import requests
 from settings.features import morph, broad, narrow, wise, gaia
 from utils.preprocessing import preprocess
+import os 
+
 
 class SQGClass:
     __author__ = "Lilianne Nakazono"
@@ -32,6 +34,21 @@ class SQGClass:
                 
     @staticmethod
     def check_columns(data, list_columns):
+        """check_columns check if all needed columns for classification are in the dataframe
+
+        Parameters
+        ----------
+        data : DataFrame
+            input dataframe for classification
+        list_columns : list
+            columns to be checked
+
+        Raises
+        ------
+        ValueError
+            if any of the needed columns is not in the input dataframe
+        """
+        
         try:
             for element in list_columns:
                 data[element]
@@ -40,6 +57,20 @@ class SQGClass:
         return
 
     def predict(self, data, gaia=True):
+        """predict uses pre-trained models to classify S-PLUS data
+
+        Parameters
+        ----------
+        data : DataFrame
+            S-PLUS data containing the features to be used in the classification
+        gaia : bool, optional
+            Determine if classification using GAIA features will be performed, by default True
+
+        Returns
+        -------
+        DataFrame
+            Contains the classification results and probabilities
+        """
         if gaia:
             features = self.feat_gaia
             ypred = pd.DataFrame(self.model_gaia.predict(data[features].values))
@@ -62,22 +93,38 @@ class SQGClass:
         
         if gaia:
             results.columns = ["CLASS_GAIA", "PROB_QSO_GAIA", "PROB_STAR_GAIA", "PROB_GAL_GAIA"]
+            for col in ["PROB_QSO_GAIA", "PROB_STAR_GAIA", "PROB_GAL_GAIA"]:
+                results[col] = results[col].round(3)
         else:
             results.columns = ["CLASS", "PROB_QSO", "PROB_STAR", "PROB_GAL"]
+            for col in ["PROB_QSO", "PROB_STAR", "PROB_GAL"]:
+                results[col] = results[col].round(3)   
 
         return results
 
+
     def classify(self, df, preprocess_data = True, correct_ext = True):
+        """classify performs star/quasar/galaxy classification
 
-        '''
-        Create classifications for all sources
+        Parameters
+        ----------
+        df : DataFrame
+            S-PLUS data containing the features to be used in the classification
+        preprocess_data : bool, optional
+            Cleans the data, by default True
+        correct_ext : bool, optional
+            Correct magnitudes by extinction, by default True
 
-        Keywords arguments:
-        df -- dataframe containing information of the 12 S-PLUS ISO magnitudes already extincted corrected
-        return_prob -- if True, estimates the probabilities for each class
-        
-        returns a dataframe with classes
-        '''
+        Returns
+        -------
+        DataFrame
+            Results from star/quasar/galaxy classification
+
+        Raises
+        ------
+        ValueError
+            if data input is empty
+        """
 
         data = df.copy(deep=True)
 
