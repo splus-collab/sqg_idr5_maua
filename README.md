@@ -50,7 +50,7 @@ More improvements are expected for the next months and a full documentation with
 | PROB_STAR_GAIA  |  Probability [0,1] of a source being a star from [GAIA model]
 | PROB_QSO_GAIA   |  Probability [0,1] of a source being a quasar from [GAIA model]
 | PROB_GAL_GAIA   |  Probability [0,1] of a source being a galaxy from [GAIA model]
-|
+
 
 # Performances
 
