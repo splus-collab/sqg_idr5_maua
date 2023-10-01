@@ -79,10 +79,10 @@ F1_weighted =  0.978
 
 # How to run
 
-T
 ## 1. Clone this repository
 ## 2. Create a conda environment
-    With the environment.yml file, you can create a conda environment with all the packages needed to run the scripts.
+
+With the environment.yml file, you can create a conda environment with all the packages needed to run the scripts.
 
     ```
     conda env create -f environment.yml
@@ -96,10 +96,11 @@ T
     python ./sqgtool.py --help
     ```
 
-    Output:
+Output:
   ![SQGTool's help](https://github.com/splus-collab/sqg_idr5_maua/blob/main/help.png?raw=true)
 ## 5. Check the logs
-    Error logs for the crossmatch and classification processes are stored in /logs/ folders
+
+Error logs for the crossmatch and classification processes are stored in /logs/ folders
 
 # How to cite
 
