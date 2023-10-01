@@ -62,6 +62,7 @@ More improvements are expected for the next months and a full documentation with
 | Precision     | 0.930 | 0.984 | 0.972 |
 | Recall        | 0.930 | 0.975 | 0.979 |
 | F1            | 0.930 | 0.979 | 0.975 |
+
 F1_weighted =  0.971
 
 
