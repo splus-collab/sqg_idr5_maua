@@ -9,6 +9,7 @@ from utils.multithread import run_multithread
 # from settings.paths import gaia_wise_path, log_path, output_path
 from classification.SQGClass import SQGClass
 from settings.paths import log_path
+from tqdm import tqdm 
 
 warnings.filterwarnings("ignore")
 
@@ -36,32 +37,36 @@ logging.basicConfig(filename=os.path.join("logs", f"classification_{dt}.log"),
 
 def classify_fields(file_list, output_path, replace=False, verbose=True):
     model = SQGClass()
-    for filename in file_list:
+    for filename in tqdm(file_list):
         output_filename = filename.split(os.path.sep)[-1].split('.')[0]+".csv"
         if verbose:
             print(output_filename)
+
+        skip_classification = False
         if os.path.exists(os.path.join(output_path,output_filename)):
             if replace == False:
-                continue
-
+                skip_classification = True
             else:
-                try:
-                    # data = pd.read_table(filename, sep=",")
-                    data = Table.read(filename, format="fits")
-                    # data = data.to_pandas().dropna(subset=morph+splus+wise)
-                    data = data.to_pandas()
-                    data["ID"] = data["ID"].apply(lambda x: x.decode('utf-8')) 
-                    results = model.classify(data, preprocess_data=True, correct_ext=True)
-                    
-                except Exception as e:
-                    print(e)
-                    logging.error(f"{filename.split(os.path.sep)[-1]}: error on classification")
-                    logging.error(e)
-                    print(traceback.format_exc())
-                    with open(os.path.join(log_path, f'filename_error_classification_{dt}.txt'), 'a') as f:
-                        f.write(filename)
-                else:
-                    results.to_csv(os.path.join(output_path, output_filename), index=False, sep=",")
+                skip_classification = False
+
+        if skip_classification  == False:
+            try:
+                # data = pd.read_table(filename, sep=",")
+                data = Table.read(filename, format="fits")
+                # data = data.to_pandas().dropna(subset=morph+splus+wise)
+                data = data.to_pandas()
+                data["ID"] = data["ID"].apply(lambda x: x.decode('utf-8')) 
+                results = model.classify(data, preprocess_data=True, correct_ext=True)
+                
+            except Exception as e:
+                print(e)
+                logging.error(f"{filename.split(os.path.sep)[-1]}: error on classification")
+                logging.error(e)
+                print(traceback.format_exc())
+                with open(os.path.join(log_path, f'filename_error_classification_{dt}.txt'), 'a') as f:
+                    f.write(filename)
+            else:
+                results.to_csv(os.path.join(output_path, output_filename), index=False, sep=",")
 
 
 # if __name__ == "__main__":
