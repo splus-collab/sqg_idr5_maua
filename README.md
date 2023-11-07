@@ -98,7 +98,8 @@ With the environment.yml file, you can create a conda environment with all the p
     ```
 
 Output:
-  ![SQGTool's help](https://github.com/splus-collab/sqg_idr5_maua/blob/main/help.png?raw=true)
+  ![SQGTool's help](https://github.com/splus-collab/sqg_idr5_maua/blob/main/img/help.png?raw=true)
+  
 ## 5. Check the logs
 
 Error logs for the crossmatch and classification processes are stored in /logs/ folders
