@@ -4,7 +4,7 @@ sys.path.append('/storage/splus/scripts/sqg_idr5/')
 
 import os
 import logging
-from settings.paths import  log_path, original_path, output_folder
+from settings.paths import  log_path
 import logging
 import glob 
 import subprocess
@@ -17,7 +17,7 @@ dt = dt.strftime("%Y-%m-%d_%H-%M")
 
 for handler in logging.root.handlers[:]:
     logging.root.removeHandler(handler)
-logging.basicConfig(filename=os.path.join(log_path,f"match_{dt}.log"),format='%(asctime)s:     %(levelname)s: %(message)s',  filemode='w', level=0, force=True)
+logging.basicConfig(filename=os.path.join(log_path,f"match_{dt}.log"),format='%(asctime)s:     %(levelname)s: %(message)s',  filemode='w', level=0)
 logging.info("Crossmatching with WISE and GAIA")
 
 
@@ -47,11 +47,14 @@ def unwise_gaia_cdsxmatch(file_list, output_folder, replace=False, verbose=True)
 
             # Fazendo o cross-match com o unWISE.
             # os.system(f"""java -jar stilts.jar cdsskymatch in={filename}  cdstable=II/363/unwise ra=RA dec=DEC radius=2 find=each blocksize=100000  ocmd='delcols "XposW1 XposW2 YposW1	YposW2 e_XposW1	e_XposW2 e_YposW1 e_YposW2 rchi2W1 rchi2W2 FW1lbs FW2lbs e_FW1lbs e_FW1lbs fwhmW1 fwhmW2 SpModW1 SpModW2 e_SpModW1 	e_SpModW2 skyW1	skyW2 RAW1deg RAW2deg DEW1deg DEW2deg coaddID detIDW1 detIDW2 nmW1 nmW2 PrimW1 PrimW2 FlagsW1 FlagsW2 f_FlagsW1	f_FlagsW2 Prim"' out={os.path.join(wise_path, field)}.fits""")
-            result = subprocess.run(cmd, capture_output=True, check=True)
+            try:
+                result = subprocess.run(cmd, capture_output=True, check=True)
+            except:
+                pass
             if os.path.exists(os.path.join(wise_path, field)+".fits")==False:
                 logging.error("%s" %(field))
                 with open(os.path.join(log_path, f'filename_error_crossmatch_{dt}.txt'), 'a') as f:
-                    f.write(filename)
+                    f.write(filename+"\n")
 
         if skip_gaia == False:
             cmd = [
@@ -62,11 +65,14 @@ def unwise_gaia_cdsxmatch(file_list, output_folder, replace=False, verbose=True)
                 f"out={os.path.join(gaia_wise_path, field)}.fits"]
 
             # # Fazendo o cross-match com o GAIA.
-            result = subprocess.run(cmd, capture_output=True, check=True)
+            try:
+                result = subprocess.run(cmd, capture_output=True, check=True)
+            except:
+                pass
             if os.path.exists(os.path.join(gaia_wise_path, field)+".fits")==False:
                 logging.error("%s" %(field))
                 with open(os.path.join(log_path, f'filename_error_crossmatch_{dt}.txt'), 'a') as f:
-                    f.write(field+"\n")
+                    f.write(filename+"\n")
 
 
 if __name__=="__main__":
