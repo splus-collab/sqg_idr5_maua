@@ -86,7 +86,7 @@ F1_weighted =  0.978
 With the environment.yml file, you can create a conda environment with all the packages needed to run the scripts.
 
     ```
-    conda env create -f environment.yml
+    conda env create --name sqg_dr5 -f environment.yml
     ```
 ## 3. Activate the environment
     ```
@@ -97,6 +97,11 @@ With the environment.yml file, you can create a conda environment with all the p
     python ./sqgtool.py --help
     ```
 
+## 4.1. Run the script in Mauá server for DR5
+    ```
+    python ./sqgtool.py --input_folder /storage/splus/Catalogues/iDR5/VAC_features/20231121 --output_folder /storage/splus/Catalogues/VACs/sqg/iDR5 --crossmatch --n_threads 8 --verbose
+
+    ```
 Output:
   ![SQGTool's help](https://github.com/splus-collab/sqg_idr5_maua/blob/main/img/help.png?raw=true)
   
