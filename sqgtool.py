@@ -35,7 +35,7 @@ def parse_args():
     
     parser.add_argument('--n_threads', 
                         default = 0,
-                        choices = range(2, 31),
+                        choices = range(2, 8),
                         type = int,
                         help='Defines number of thread processes. Default is 0, which means it will not run in multithreads.')
     
@@ -78,7 +78,7 @@ def parse_args():
     
     parser.add_argument('--no-verbose', 
                         dest="verbose",
-                        action="store_true",
+                        action="store_false",
                         help='Turns off prints throughout the processes.') 
     args = parser.parse_args()
     return args
@@ -141,22 +141,24 @@ def main(args):
     """
 
     vac_output, wise_output, gaia_wise_output = define_paths(args)
+
     if args.diff:
         # only runs classification for files that are in the input folder but are not in the vac folder
         missing = missing_fields(args.input_folder,vac_output)
         file_list = [os.path.join(args.input_folder,field) for field in missing]
     else:
         # run classification for all files in folder
-        file_list = glob(os.path.join(gaia_wise_output, "*.fits"))
+        file_list = glob(os.path.join(args.input_folder, "*.fits"))
     
     if args.crossmatch:
         unwise_gaia_cdsxmatch(file_list, output_folder=args.output_folder,  replace=args.replace_crossmatch, verbose=args.verbose)
     
-
+    match_files = [os.path.join(gaia_wise_output, field.split(os.path.sep)[-1].split("_dual")[0]+".fits") for field in file_list]
     if args.n_threads > 0:
-        run_multithread(file_list, function=classify_fields,  Num_Parallel=args.n_threads, output_folder=vac_output, replace=args.replace_vac, verbose=args.verbose)
+        run_multithread(match_files, function=classify_fields,  Num_Parallel=args.n_threads, output_folder=vac_output, replace=args.replace_vac, verbose=args.verbose)
     else:
-        classify_fields(file_list, output_path=vac_output, replace=args.replace_vac, verbose=args.verbose)
+        classify_fields(match_files, output_path=vac_output, replace=args.replace_vac, verbose=args.verbose)
+
 
 if __name__=="__main__":
     args = parse_args()
